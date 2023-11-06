@@ -17,56 +17,36 @@ with open(election_data_csv, 'r') as csvfile:
 
       #Set Variables
     Count = 0
-    TotalProfit = 0
-    TotalChangeProfit = 0
-    InitialProfit = 0
-    MonthChange = []
-    Date = []
+    Vote = []
+    Percent = []
+    TotalCandidate = []
+    Candidate = []
 
     for row in csvreader:
-      #Count how many rows there are for the number of months
+    
       Count = Count + 1
-      
-      #So greatest increase and decrease date can be located
-      Date.append(row[0])
-      
-      #Calulate Profit
-      TotalProfit = TotalProfit + int(row[1])
-      
-      #Calculate monthly change
-      OverallProfit = int(row[1])
-      MonthChangeProfit = OverallProfit - InitialProfit
-      
-      #Place into list
-      MonthChange.append(MonthChangeProfit)
-      
-      #Calculate overall profit
-      TotalChangeProfit = TotalChangeProfit + MonthChangeProfit
-      InitialProfit = OverallProfit
-      
-      #Calculate average
-      AverageChangeProfit = (TotalChangeProfit/Count)
-      
-      #Get greatest increase
-      Increase = max(MonthChange)
-      IncreaseMonth = Date[MonthChange.index(Increase)]
+        
+      TotalCandidate.append(row[2])
 
-      print(f'Greatest Increase in Profits: {IncreaseMonth} ({Increase})')
-      
-      #Get greatest descrease
-      Decrease = min(MonthChange)
-      DecreaseMonth = Date[MonthChange.index(Decrease)]
+    for name in set(TotalCandidate):
+      Candidate.append(name)
 
-      print(f'Greatest Decrease in Profits: {DecreaseMonth} ({Decrease})')
+      TotalVoteCandidate = TotalCandidate.count(name)
+      Vote.append(TotalVoteCandidate)
+
+      TotalVotePercent = (TotalVoteCandidate/Count)*100
+      Percent.append(TotalVotePercent)
+
+      WinningCount = max(Vote)
+      WinningCandidate = TotalCandidate[Vote.index(WinningCount)]
+    
+    election_results = os.path.join('analysis', 'election_results.txt')
       
-      #Set path for file to be written
-      financial_analysis = os.path.join('analysis', 'financial_analysis.txt')
-      
-      with open(financial_analysis, 'w') as text:
+    with open(election_results, 'w') as text:
             text.write(f"Financial Analysis\n"
                        f"---------------------\n"
-                       f"Total Month : {Count}\n"
-                       f"Total: ${TotalProfit}\n"
-                       f"Average Change: ${AverageChangeProfit:.2f}\n"
-                       f"Greatest Increase in Profits: {IncreaseMonth} (${Increase})\n"
-                       f"Greatest Decrease in Profits: {DecreaseMonth} (${Decrease})\n")
+                       f"Total Votes : {Count}\n"
+                       f"---------------------\n"
+                       f"{Candidate} {Percent} {Vote} \n"
+                       f"---------------------\n"
+                       f"Winner: {WinningCandidate}\n")
